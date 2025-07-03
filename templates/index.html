@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{ theme }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Shortener</title>
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const themeBtn = document.getElementById("themeToggle");
+      const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      themeBtn.innerText = newTheme === 'dark' ? '🌞 Light Mode' : '🌙 Dark Mode';
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById("toast");
+        toast.style.display = "block";
+        setTimeout(() => {
+          toast.style.display = "none";
+        }, 2000);
+      });
+    }
+
+    window.onload = () => {
+      const html = document.documentElement;
+      const themeBtn = document.getElementById("themeToggle");
+      const currentTheme = html.getAttribute('data-theme');
+      themeBtn.innerText = currentTheme === 'dark' ? '🌞 Light Mode' : '🌙 Dark Mode';
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.querySelector("form");
+      const themeInput = document.getElementById("themeInput");
+
+      form.addEventListener("submit", function () {
+        themeInput.value = document.documentElement.getAttribute("data-theme");
+      });
+    });
+  </script>
+  <style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  [data-theme="light"] {
+    --bg: #f0f4f8;
+    --text: #1f2937;
+    --box: #ffffff;
+    --accent: #2563eb;
+    --link: #1d4ed8;
+    --toast: #dcfce7;
+  }
+
+  [data-theme="dark"] {
+    --bg: #0f172a;
+    --text: #f1f5f9;
+    --box: #1e293b;
+    --accent: #60a5fa;
+    --link: #93c5fd;
+    --toast: #bbf7d0;
+  }
+
+  .container {
+    max-width: 700px;
+    margin: auto;
+    padding: 2rem;
+  }
+
+  .card {
+    background: var(--box);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    min-height: calc(100vh - 4rem);
+    transition: background 0.3s ease;
+  }
+
+  h2 {
+    text-align: center;
+    margin-top: 0;
+    color: var(--accent);
+  }
+
+  form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  input[type=url] {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: border 0.2s ease;
+  }
+
+  input[type=url]:focus {
+    border-color: var(--accent);
+    outline: none;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: none;
+    background-color: var(--accent);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #1d4ed8;
+  }
+
+  .short-url-block {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .url-row {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .url-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .url-item span {
+    font-weight: bold;
+    min-width: 70px;
+    color: var(--accent);
+  }
+
+  .url-link {
+    flex: 1;
+    word-break: break-word;
+    color: var(--link);
+    text-decoration: none;
+  }
+
+  .url-link:hover {
+    text-decoration: underline;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--toast);
+    color: black;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    display: none;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+
+  .pagination {
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  .pagination button {
+    margin: 0 5px;
+  }
+
+  .info-message {
+    background-color: #e0f2fe;
+    color: #0c4a6e;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-top: 1rem;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h2>URL Shortener</h2>
+      <form method="POST">
+        <input type="url" name="original_url" placeholder="Enter long URL" required>
+        <input type="hidden" id="themeInput" name="theme">
+        <button type="submit">Shorten</button>
+        <button type="button" id="themeToggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+      </form>
+
+      {% if short_id %}
+      <div class="short-url-block">
+      <div class="url-item">
+    <span>Short:</span>
+    <a class="url-link" href="{{ path }}/{{ short_id }}" target="_blank">{{ path }}/{{ short_id }}</a>
+    <button onclick="copyToClipboard('{{ path }}/{{ short_id }}')">Copy</button>
+  </div>
+</div>
+{% endif %}
+
+
+      <div style="margin-top: 2rem;">
+        <h3>Last 5 URLs</h3>
+        {% for row in urls %}
+        <div class="url-row">
+          <div class="url-item">
+            <span>Original:</span>
+            <a class="url-link" href="{{ row.original_url }}" target="_blank">{{ row.original_url }}</a>
+            <button onclick="copyToClipboard('{{ row.original_url }}')">Copy</button>
+          </div>
+          <div class="url-item">
+            <span>Short:</span>
+            <a class="url-link" href="{{ path }}/{{ row.short_id }}" target="_blank">{{ path }}/{{ row.short_id }}</a>
+            <button onclick="copyToClipboard('{{ path }}/{{ row.short_id }}')">Copy</button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="pagination">
+        {% if page > 1 %}
+        <a href="?page={{ page - 1 }}"><button>Previous</button></a>
+        {% endif %}
+        {% if page < total_pages %}
+        <a href="?page={{ page + 1 }}"><button>Next</button></a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Copied!</div>
+</body>
+</html>
