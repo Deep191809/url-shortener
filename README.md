@@ -139,5 +139,5 @@ Pull requests are welcome. For major changes, please open an issue first.
 ## 📧 Contact
 
 **Developer:** Deep Punia  
-**Email:** deeppunia2004@example.com  
+**Email:** deeppunia2004@gmail.com  
 **Project Mentor:**  Parikshit Pareek
